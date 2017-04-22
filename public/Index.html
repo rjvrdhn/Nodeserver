@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Fiery Integration Hub</title>
+    <script src="scripts/angular.min.js"></script>
+    <script src="scripts/angular-animate.js"></script>
+    <script src="scripts/angular-aria.js"></script>
+    <script src="scripts/fihmain.js"></script>
+    <link href="css/fihstyling.css" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="css/animate.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style>
+        html, body, h1, h2, h3, h4, h5 {
+            font-family: "Raleway", sans-serif;
+        }
+    </style>
+
+</head>
+
+<body class="w3-light-grey">
+    <!-- Header -->
+    <div class="w3-container fc-header">
+        <span class="w3-right" style="color:white">username@passport.efi.com</span>
+        <h2 style="color:white"><img class="w3-circle" src="images/EFI_logo_RGB.jpg" height="40" width="52" /> Fiery Integration Hub</h2>
+    </div>
+    <!-- Body -->
+    <div ng-app="fih" ng-controller="fihmanager" style="padding-left:5px;">
+        <nav class="navbar" style="padding-top:10px; margin-bottom:0px;" role="navigation">
+            <div class="container-fluid">
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><h4>Configured Devices</h4></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">                        
+                            <button class="dropdown-toggle w3-btn w3-border w3-white w3-text-blue w3-round w3-right addDeviceButton" data-toggle="dropdown" ng-click="addDeviceInit()"><i class="fa fa-plus-circle"></i> Add Device</button>
+                            <ul class="dropdown-menu dropdown-lr animated slideInRight" role="menu">
+                                <div class="col-lg-12" style="border-top-left-radius:2px;">
+                                    <form id="adddevice-form" name="adddeviceForm" role="form" autocomplete="off">
+                                        <fieldset>
+                                            <legend>Device Information</legend>
+                                            <div>
+                                                <input type="text" name="ip" ng-model="ipAddress" ng-ip-address tabindex="1" required placeholder="Enter IP address" class="addDeviceInput w3-border w3-padding">
+                                                <span ng-show="!ipAddress.length" class="fieldRequired">*</span>
+                                            </div>
+                                            <div>
+                                                <input type="text" ng-model="familyName" tabindex="2" required placeholder="Enter Family Name" class="addDeviceInput w3-border w3-padding">
+                                                <span ng-show="!familyName.length" class="fieldRequired">*</span>
+                                            </div>
+                                            <div>
+                                                <input type="text" ng-model="modelName" tabindex="3" required placeholder="Enter Model" class="addDeviceInput w3-border w3-padding">
+                                                <span ng-show="!modelName.length" class="fieldRequired">*</span>
+                                            </div>
+                                            <div>
+                                                <span ng-show="addfailed==1" style="color:red;">Please fill the required fields!</span>
+                                                <span ng-show="deviceAdded==1" style="color:green"> Device added succesfully</span>
+                                            </div>
+                                            <div class="w3-right" style="padding-top:15px; padding-bottom:5px; padding-right:30px;">
+                                                <button class="w3-btn w3-border w3-green" style="border-radius:5px;" tabindex="4" ng-click="addDevice()">save</button>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+                                </div>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav> 
+        <div class="fc-container">
+            <table class="w3-table w3-striped w3-white tbfixed" ng-init="infoShow = 0">
+                <tr>
+                    <td style="width:50%; max-width:50%">
+                        <div>
+                            <table class="w3-table w3-striped w3-white" >
+                                <tr>
+                                    <th> </th>
+                                    <th>Server</th>
+                                    <th>IP</th>
+                                    <th>Device Status</th>
+                                    <th>Print Status</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                <tr ng-repeat="device in configuredDevices" ng-init="transactionIndex=$index" ng-click="rowHighilited($index, device.ipAddress, device.familyName, device.modelName)" ng-class="transactionIndex==selectedRow?'selected':''">
+                                    <td><i class="fa fa-bolt w3-black w3-padding-tiny"></i></td>
+                                    <td>{{device.modelName}}</td>
+                                    <td>{{device.ipAddress}}</td>
+                                    <td><a href="#" class="w3-padding"><i class="fa fa-circle w3-text-green"></i>  Online</a></td>
+                                    <td><a href="#" class="w3-padding">Printing</a></td>
+                                    <td style="width:50px;"><button ng-click="status(device.ipAddress, device.familyName, device.modelName)" class="savecancebutton"><i class="fa fa-dashboard"></i></button></td>
+                                    <td style="width:50px;"><button ng-click="deviceSettings(device.ipAddress, device.familyName, device.modelName)" class="savecancebutton"><i class="fa fa-cogs"></i></button></td>
+                                    <td style="width:50px;"><button ng-click="paperCatalog(device.ipAddress, device.familyName, device.modelName)" class="savecancebutton"><i class="fa fa-map"></i></button></td>
+                                    <td style="width:50px;"><button ng-click="deleteDevice(device.ipAddress)" class="savecancebutton"><i class="fa fa-trash"></i></button></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td style="width: 50%; max-width: 50%">
+                        <div>
+                            <div ng-show="infoShow == 0">
+                                Please select the device!
+                            </div>
+                            <div ng-show="infoShow == 1">
+                                <h4>Device and Job status</h4>
+                                <div class="w3-container w3-border w3-padding">
+                                    <div>
+                                        <span><b>Device:</b> {{ipAddress}}</span>
+                                        <span><b>Status:</b> {{curStatus}}</span>
+                                    </div>
+                                    <div>
+                                        <span><b>Device Family:</b> {{familyName}}</span>
+                                        <span><b>Device Model:</b> {{modelName}}</span>
+                                    </div>
+
+                                </div>
+                                <div class="w3-container w3-border w3-padding">
+                                    <h5 class="w3-center">Job Status</h5>
+                                    <table class="w3-table w3-border w3-striped w3-white">
+                                        <tr>
+                                            <th> </th>
+                                            <th>Status</th>
+                                            <th>Job Title</th>
+                                            <th>User</th>
+                                            <th>Size</th>
+                                            <th>Pages</th>
+                                            <th>Copies</th>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Printing</td>
+                                            <td>10 Page.pdf</td>
+                                            <td>Administrator</td>
+                                            <td>0.1 MB</td>
+                                            <td>10</td>
+                                            <td>5</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Waiting to Print</td>
+                                            <td>AnotherJob.pdf</td>
+                                            <td>Administrator</td>
+                                            <td>0.23 MB</td>
+                                            <td>25</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Processing</td>
+                                            <td>ProcessingJob.pdf</td>
+                                            <td>Administrator</td>
+                                            <td>0.01 MB</td>
+                                            <td>1</td>
+                                            <td>100</td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div ng-show="infoShow == 2">
+                                <h4 class="w3-center">Device Settings</h4>
+                                <div class="card">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#printer" aria-controls="printer" role="tab" data-toggle="tab">Printer</a></li>
+                                        <li role="presentation"><a href="#instoptions" aria-controls="instoptions" role="tab" data-toggle="tab">Installable Options</a></li>
+                                        <li role="presentation"><a href="#tab3" aria-controls="tab3" role="tab" data-toggle="tab">Tab 3</a></li>
+                                        <li role="presentation"><a href="#tab4" aria-controls="tab4" role="tab" data-toggle="tab">Tab 4</a></li>
+                                    </ul>
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane active" id="printer">
+                                            <form class="w3-container">
+                                                <label class="w3-label"><b>Name</b></label>
+                                                <input class="w3-input w3-round w3-border" type="text">
+                                                <p>
+                                                    <input class="w3-check" type="checkbox">
+                                                    <label class="w3-validate">Inline merge manual release</label>
+                                                <p>
+                                                    <input class="w3-check" type="checkbox">
+                                                    <label class="w3-validate">Printer has account track enabled</label>
+                                                <p>
+                                                    <input class="w3-check" type="checkbox">
+                                                    <label class="w3-validate">Send postscript to engine</label>
+                                            </form>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane" id="instoptions">
+                                            <form class="w3-container">
+                                                <label class="w3-label">Creaser</label>
+                                                <select class="w3-select w3-border" name="option">
+                                                    <option value="1" selected>Not installed</option>
+                                                    <option value="2">Installed</option>
+                                                </select>
+                                                <p>
+                                                    <label class="w3-label">External Finisher</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Roll Feeder</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Folder</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Perfect Binder</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Post-fuser insertion (PI) trays</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Puncher</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">2 Hole Punch installed</option>
+                                                        <option value="3">2/3 Hole Punch installed</option>
+                                                        <option value="4">2/4 Hole Punch installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Ring Binder</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+                                                    <label class="w3-label">Saddle Stitcher</label>
+                                                    <select class="w3-select w3-border" name="option">
+                                                        <option value="1" selected>Not installed</option>
+                                                        <option value="2">Installed</option>
+                                                    </select>
+                                                <p>
+
+                                            </form>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane" id="tab3">
+                                            Tab 3 content goes here
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane" id="tab4">
+                                            Tab 4 content goes here
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
+                            <div ng-show="infoShow == 3">
+                                <h4 class="w3-center">Device Papercatalog</h4>
+                                <div class="container w3-padding">
+                                    <div class="w3-container w3-center">
+                                        <button class="w3-btn w3-border w3-white w3-text-blue w3-round"><i class="fa fa-plus-circle"></i> Add New</button>
+                                        <button class="w3-btn w3-border w3-white w3-text-blue w3-round"><i class="fa fa-trash"></i> Delete</button>
+                                        <button class="w3-btn w3-border w3-white w3-text-blue w3-round"><i class="fa fa-download"></i> Import</button>
+                                        <button class="w3-btn w3-border w3-white w3-text-blue w3-round"><i class="fa fa-upload"></i> Export</button>
+                                    </div>
+                                </div>
+
+                                <table class="w3-table w3-border w3-striped w3-white">
+                                    <tr>
+                                        <th>Tray</th>
+                                        <th>Name</th>
+                                        <th>Weight</th>
+                                        <th>Paper Size</th>
+                                        <th>Feed Direction</th>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>FC_Letter</td>
+                                        <td>75</td>
+                                        <td>8 1/2x11</td>
+                                        <td>Long Edge</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>FC_Blue</td>
+                                        <td>75</td>
+                                        <td>8 1/2x11</td>
+                                        <td>Long Edge</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>FC_Green</td>
+                                        <td>75</td>
+                                        <td>8 1/2x11</td>
+                                        <td>Long Edge</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>FC_Pink</td>
+                                        <td>75</td>
+                                        <td>8 1/2x11</td>
+                                        <td>Long Edge</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>FC_Yellow</td>
+                                        <td>75</td>
+                                        <td>8 1/2x11</td>
+                                        <td>Long Edge</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        
+
+    </div>    
+
+    <div style="clear:both;">
+        <span></span>
+    </div>
+    <!-- Footer -->
+    
+    <footer class="w3-bottom w3-center fc-footer">
+        Electronics for Imaging &#169; 2017, All Rights reserved
+    </footer>
+
+</body>
+</html>

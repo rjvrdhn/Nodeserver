@@ -1,0 +1,25 @@
+{
+  "name": "vsnodejs",
+  "version": "0.0.0",
+  "description": "VSnodejs",
+  "main": "app.js",
+  "author": "Raj",
+  "dependencies": {
+    "connect": "^3.6.0",
+    "app": "^0.1.0",
+    "ejs": "^2.5.6",
+    "consolidate": "^0.14.5",
+    "http": "^0.0.0",
+    "hogan": "^1.0.2",
+    "express": "^4.15.0",
+    "ping": "^0.2.2",
+    "npm": "^3.10.10",
+    "path": "^0.12.7",
+	  "body-parser": "^1.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC"
+}
